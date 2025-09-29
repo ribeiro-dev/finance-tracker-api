@@ -66,7 +66,19 @@ export default class UsersController {
     const { userId } = params
 
     try {
-      const payload = await request.validateUsing(updateUserValidator, { meta: { userId } })
+      const payload = await request.validateUsing(updateUserValidator)
+      const user = this.userService.findById(userId)
+
+      if (!user) {
+        const responseBody: IErrorResponse = {
+          error: {
+            code: 'ROW_NOT_FOUND',
+            message: 'User not found',
+          },
+        }
+        return response.badRequest(responseBody)
+      }
+
       const updateData = {
         name: payload.name,
         isActive: payload.isActive,
