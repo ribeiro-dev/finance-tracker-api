@@ -18,6 +18,21 @@ export class UserService {
     return usersRetrieve
   }
 
+  async findById(userId: number): Promise<IUserRetrieve | null> {
+    const user = await User.find(userId)
+
+    if (!user) {
+      return null
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isActive: user.isActive,
+    } as IUserRetrieve
+  }
+
   async create(payload: IUserCreate): Promise<IUserRetrieve> {
     const user = await User.create(payload)
     const created = {
