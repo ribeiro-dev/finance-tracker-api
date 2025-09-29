@@ -69,8 +69,6 @@ export default class UsersController {
       const payload = await request.validateUsing(updateUserValidator, { meta: { userId } })
       const updateData = {
         name: payload.name,
-        email: payload.email, //! might remove from update
-        password: payload.password, //! might remove from update
         isActive: payload.isActive,
       } as IUserUpdate
 
