@@ -1,7 +1,10 @@
-import { UserService } from '#services/user_service'
-import { createUserValidator, updateUserValidator } from '#validators/user'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import hash from '@adonisjs/core/services/hash'
+
+import { UserService } from '#services/user_service'
+import { createUserValidator, updateUserValidator } from '#validators/user'
+
 import { IUserUpdate } from '../interfaces/user.js'
 import { IErrorResponse, ISuccessResponse } from '../interfaces/responses.js'
 
@@ -27,6 +30,8 @@ export default class UsersController {
 
     try {
       const payload = await request.validateUsing(createUserValidator)
+      payload.password = await hash.make(payload.password)
+
       const created = await this.userService.create(payload)
       const responseBody: ISuccessResponse = {
         data: created,
@@ -64,8 +69,8 @@ export default class UsersController {
       const payload = await request.validateUsing(updateUserValidator, { meta: { userId } })
       const updateData = {
         name: payload.name,
-        email: payload.email,
-        password: payload.password,
+        email: payload.email, //! might remove from update
+        password: payload.password, //! might remove from update
         isActive: payload.isActive,
       } as IUserUpdate
 
