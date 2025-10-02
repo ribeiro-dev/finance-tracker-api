@@ -6,7 +6,12 @@ import { UserService } from '#services/user_service'
 import { createUserValidator, updateUserValidator } from '#validators/user'
 
 import { IUserUpdate } from '../interfaces/user.js'
-import { IErrorResponse, ISuccessResponse } from '../interfaces/responses.js'
+import { ISuccessResponse } from '../interfaces/responses.js'
+
+import InternalServerErrorException from '#exceptions/internal_server_error_exception'
+import BadRequestException from '#exceptions/bad_request_exception'
+import ConflictException from '#exceptions/conflict_exception'
+import NotFoundException from '#exceptions/not_found_exception'
 
 @inject()
 export default class UsersController {
@@ -42,23 +47,11 @@ export default class UsersController {
       console.error(error)
 
       if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        //! Change validation later
-        const responseBody: IErrorResponse = {
-          error: {
-            code: 'UNIQUE_CONSTRAINT_VIOLATION',
-            message: 'Email already exists',
-          },
-        }
-        return response.conflict(responseBody)
+        //! Change validation code later
+        throw new ConflictException('Email already exists', { code: 'E_UNIQUE_CONSTRAINT_VIOLATION' })
       }
 
-      const responseBody: IErrorResponse = {
-        error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Error creating user',
-        },
-      }
-      return response.internalServerError(responseBody)
+      throw new InternalServerErrorException()
     }
   }
 
@@ -69,15 +62,7 @@ export default class UsersController {
       const payload = await request.validateUsing(updateUserValidator)
       const user = this.userService.findById(userId)
 
-      if (!user) {
-        const responseBody: IErrorResponse = {
-          error: {
-            code: 'ROW_NOT_FOUND',
-            message: 'User not found',
-          },
-        }
-        return response.badRequest(responseBody)
-      }
+      if (!user) throw new BadRequestException('User not found', { code: 'E_ROW_NOT_FOUND' })
 
       const updateData = {
         name: payload.name,
@@ -91,22 +76,14 @@ export default class UsersController {
 
       if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
         //! Change validation code later
-        const responseBody: IErrorResponse = {
-          error: {
-            code: 'UNIQUE_CONSTRAINT_VIOLATION',
-            message: 'Email already exists',
-          },
-        }
-        return response.conflict(responseBody)
+        throw new ConflictException('Email already exists', { code: 'E_UNIQUE_CONSTRAINT_VIOLATION' })
       }
 
-      const responseBody: IErrorResponse = {
-        error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Error creating user',
-        },
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        throw new NotFoundException('User not found')
       }
-      return response.internalServerError(responseBody)
+
+      throw new InternalServerErrorException('Error creating user')
     }
   }
 
@@ -117,13 +94,8 @@ export default class UsersController {
       await this.userService.delete(userId)
       return response.noContent()
     } catch (error) {
-      const responseBody: IErrorResponse = {
-        error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Error creating user',
-        },
-      }
-      return response.internalServerError(responseBody)
+      console.error(error)
+      throw new InternalServerErrorException('Error deleting user')
     }
   }
 }
