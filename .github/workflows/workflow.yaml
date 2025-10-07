@@ -6,6 +6,12 @@ jobs:
   continuous-integration:
     runs-on: ubuntu-latest
 
+    env:
+      NODE_ENV: development
+      API_KEY: ${{ vars.API_KEY }}
+      HOST: ${{ vars.HOST }}
+      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+
     steps:
       - uses: actions/checkout@v3
       - name: using Node.js
