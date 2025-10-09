@@ -21,16 +21,20 @@ router.get('/health', async () => {
 
 router
   .group(() => {
-    router.post('/login', [AuthController, 'login'])
-  })
-  .prefix('/auth')
+    router
+      .group(() => {
+        router.post('/login', [AuthController, 'login'])
+      })
+      .prefix('/auth')
 
-router
-  .group(() => {
-    router.get('/', [UsersController, 'index'])
-    router.post('/', [UsersController, 'store'])
-    router.put('/:userId', [UsersController, 'update'])
-    router.delete('/:userId', [UsersController, 'destroy'])
+    router
+      .group(() => {
+        router.get('/', [UsersController, 'index'])
+        router.post('/', [UsersController, 'store'])
+        router.put('/:userId', [UsersController, 'update'])
+        router.delete('/:userId', [UsersController, 'destroy'])
+      })
+      .prefix('/users')
+      .use(middleware.auth())
   })
-  .prefix('/users')
-  .use(middleware.auth())
+  .prefix('/api')
