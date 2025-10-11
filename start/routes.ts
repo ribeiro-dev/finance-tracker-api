@@ -12,6 +12,7 @@ import { middleware } from './kernel.js'
 
 const UsersController = () => import('#controllers/users_controller')
 const AuthController = () => import('#controllers/auth_controller')
+const CategoriesController = () => import('#controllers/categories_controller')
 
 router.get('/health', async () => {
   return {
@@ -35,6 +36,16 @@ router
         router.delete('/:userId', [UsersController, 'destroy'])
       })
       .prefix('/users')
+      .use(middleware.auth())
+
+    router
+      .group(() => {
+        router.get('/', [CategoriesController, 'index'])
+        router.post('/', [CategoriesController, 'store'])
+        router.put('/:categoryId', [CategoriesController, 'update'])
+        router.delete('/:categoryId', [CategoriesController, 'delete'])
+      })
+      .prefix('/categories')
       .use(middleware.auth())
   })
   .prefix('/api')
