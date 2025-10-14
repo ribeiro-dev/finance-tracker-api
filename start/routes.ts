@@ -51,6 +51,7 @@ router
 
     router.group(() => {
       router.get('/', [TransactionsController, 'index'])
+      router.post('/', [TransactionsController, 'store'])
     })
     .prefix('/transactions')
     .use(middleware.auth())

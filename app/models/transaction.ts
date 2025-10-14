@@ -18,7 +18,7 @@ export default class Transaction extends BaseModel {
   @column()
   declare amount: number
 
-  @column()
+  @column.dateTime()
   declare date: DateTime
 
   @column()
