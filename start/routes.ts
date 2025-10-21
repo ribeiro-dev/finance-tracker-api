@@ -53,6 +53,7 @@ router
       router.get('/', [TransactionsController, 'index'])
       router.post('/', [TransactionsController, 'store'])
       router.put('/:transactionId', [TransactionsController, 'update'])
+      router.delete('/:transactionId', [TransactionsController, 'destroy'])
     })
     .prefix('/transactions')
     .use(middleware.auth())

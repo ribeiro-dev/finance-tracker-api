@@ -3,6 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 import InternalServerErrorException from '#exceptions/internal_server_error_exception'
 import BadRequestException from '#exceptions/bad_request_exception'
+import UnauthorizedException from '#exceptions/unauthorized_exception'
 
 import { TransactionService } from '#services/transaction_service'
 import { createTransactionValidator, updateTransactionValidator } from '#validators/transaction'
@@ -94,5 +95,25 @@ export default class TransactionsController {
 
       throw new InternalServerErrorException('Error updating transaction')
     }
+  }
+
+  async destroy({ request, response }: HttpContext) {
+    const { transactionId } = request.params()
+    const userId = request.user.id
+
+    const transaction = await this.transactionService.findById(transactionId)
+    if (!transaction) {
+      throw new BadRequestException('Transaction not found')
+    }
+
+    const userIsOwner = transaction.creator.id == userId
+    if (!userIsOwner)
+      new UnauthorizedException('Transaction doesn\'t belong to the user')
+
+    const deleted = await this.transactionService.delete(transactionId)
+    if (!deleted)
+      throw new InternalServerErrorException()
+
+    return response.ok({ data: deleted } as ISuccessResponse)
   }
 }

@@ -40,4 +40,13 @@ export class TransactionService {
     await transaction.save()
     return transaction.toResponse()
   }
+
+  async delete(transactionId: number) {
+    const transaction = await Transaction.find(transactionId)
+    if (!transaction)
+      return false
+
+    await transaction.delete()
+    return transaction
+  }
 }
