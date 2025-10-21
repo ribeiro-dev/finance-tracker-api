@@ -25,3 +25,12 @@ export interface ITransactionCreate {
   userId: number
   categoryId: number
 }
+
+export interface ITransactionUpdate {
+  title: string
+  amount: number
+  date: DateTime
+  description: string | null
+  type: TransactionType
+  categoryId: number
+}

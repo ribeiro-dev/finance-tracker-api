@@ -5,11 +5,11 @@ import InternalServerErrorException from '#exceptions/internal_server_error_exce
 import BadRequestException from '#exceptions/bad_request_exception'
 
 import { TransactionService } from '#services/transaction_service'
-import { createTransactionValidator } from '#validators/transaction'
+import { createTransactionValidator, updateTransactionValidator } from '#validators/transaction'
 import CategoryService from '#services/category_service'
 
 import { ISuccessResponse } from '../interfaces/responses.js'
-import { ITransactionCreate } from '../interfaces/transactions.js'
+import { ITransactionCreate, ITransactionUpdate } from '../interfaces/transactions.js'
 
 @inject()
 export default class TransactionsController {
@@ -53,6 +53,46 @@ export default class TransactionsController {
     } catch (error) {
       console.log(error)
       throw new InternalServerErrorException()
+    }
+  }
+
+  async update({ request, response }: HttpContext) {
+    const { transactionId } = request.params()
+    const userId = request.user.id
+
+    const payload = await request.validateUsing(updateTransactionValidator)
+
+    const transaction = await this.transactionService.findById(transactionId)
+    if (!transaction) {
+      throw new BadRequestException('Transaction not found')
+    }
+
+    const categoryId = payload.categoryId ?? transaction.category.id
+    const categoryBelongsToUser = await this.categoryService.userIsOwner(categoryId, userId)
+    if (!categoryBelongsToUser) {
+      throw new BadRequestException('Invalid category id')
+    }
+
+    const userIsOwner = transaction.creator.id == userId
+    if (!userIsOwner) {
+      throw new BadRequestException('User is not owner of the category')
+    }
+
+    try {
+      const updated = await this.transactionService.update(payload as ITransactionUpdate, transactionId)
+      if (!updated)
+        throw new Error()
+
+      return response.ok({ data: updated } as ISuccessResponse)
+
+    } catch (error) {
+      console.error(error)
+
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        throw new BadRequestException('Transaction not found')
+      }
+
+      throw new InternalServerErrorException('Error updating transaction')
     }
   }
 }

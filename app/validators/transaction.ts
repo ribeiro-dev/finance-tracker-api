@@ -18,3 +18,21 @@ export const createTransactionValidator = vine.compile(
     }),
   })
 )
+
+export const updateTransactionValidator = vine.compile(
+  vine.object({
+    title: vine.string().trim().maxLength(100).optional(),
+    amount: vine.number().positive().optional(),
+    date: vine
+      .string()
+      .trim()
+      .transform((value) => DateTime.fromJSDate(new Date(value)))
+      .optional(),
+    description: vine.string().trim().nullable().optional(),
+    type: vine.enum(TransactionType).optional(),
+    categoryId: vine.number().positive().exists({
+      table: 'categories',
+      column: 'id',
+    }).optional(),
+  })
+)

@@ -1,5 +1,5 @@
-import Transaction from "#models/transaction";
-import { ITransactionCreate } from "../interfaces/transactions.js";
+import Transaction from '#models/transaction'
+import { ITransactionCreate, ITransactionUpdate } from '../interfaces/transactions.js'
 
 export class TransactionService {
   async findByUserId(userId: number) {
@@ -13,8 +13,31 @@ export class TransactionService {
     return allTransactions
   }
 
+  async findById(id: number) {
+    const transaction = await Transaction.query()
+      .where('id', id)
+      .preload('category')
+      .preload('creator')
+      .first()
+    if (!transaction)
+      return null
+
+    return transaction.toResponse()
+  }
+
   async create(payload: ITransactionCreate) {
     const created = await Transaction.create(payload)
     return created.toResponse()
+  }
+
+  async update(payload: ITransactionUpdate, transactionId: number) {
+    const transaction = await Transaction.find(transactionId)
+    if (!transaction) {
+      return null
+    }
+
+    transaction.merge(payload)
+    await transaction.save()
+    return transaction.toResponse()
   }
 }
