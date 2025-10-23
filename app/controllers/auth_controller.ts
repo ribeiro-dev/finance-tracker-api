@@ -16,6 +16,11 @@ export default class AuthController {
     this.authService = authService
   }
 
+  /**
+   * @login
+   * @requestBody { "email": "your@email.com", "password": "nicePasswordHere" }
+   * @responseBody <200>  - {"data": { "accessToken": "yourToken", "expiresAt": 123456789}} - Will return your data inside and object. Containing your token and expiration
+   */
   async login({ request, response }: HttpContext) {
     const payload = await request.validateUsing(loginValidator)
 

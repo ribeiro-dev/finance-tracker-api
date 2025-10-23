@@ -21,6 +21,12 @@ export default class UsersController {
     this.userService = userService
   }
 
+  /**
+   *
+   * @index
+   * @requestBody {"email": "your@email.com", "password": "nicePasswordHere"}
+   * @responseBody 200 - { "data": "<IUserRetrieve[]>" } - Returns all registered users
+   */
   async index({ response }: HttpContext) {
     const users = await this.userService.findAll()
     const responseBody: ISuccessResponse = {
@@ -48,7 +54,9 @@ export default class UsersController {
 
       if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
         //! Change validation code later
-        throw new ConflictException('Email already exists', { code: 'E_UNIQUE_CONSTRAINT_VIOLATION' })
+        throw new ConflictException('Email already exists', {
+          code: 'E_UNIQUE_CONSTRAINT_VIOLATION',
+        })
       }
 
       throw new InternalServerErrorException()
@@ -76,7 +84,9 @@ export default class UsersController {
 
       if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
         //! Change validation code later
-        throw new ConflictException('Email already exists', { code: 'E_UNIQUE_CONSTRAINT_VIOLATION' })
+        throw new ConflictException('Email already exists', {
+          code: 'E_UNIQUE_CONSTRAINT_VIOLATION',
+        })
       }
 
       if (error.code === 'E_ROW_NOT_FOUND') {
