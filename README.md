@@ -3,7 +3,8 @@
 [![Built with AdonisJS](https://img.shields.io/badge/Built%20with-AdonisJS-5A45FF?logo=adonisjs)](https://adonisjs.com)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)
 
-Uma REST API criada com AdonisJS (e Typescript), para gerenciar finanças pessoas - incluindo transações, categorias e relatórios
+Uma REST API criada com AdonisJS (e Typescript), para gerenciar finanças pessoais - incluindo transações, categorias e relatórios
+
 Seguindo uma arquitetura limpa e escalável, e também as convenções do AdonisJS para controllers, services e validators
 
 ## 🚀 Features
