@@ -1,15 +1,15 @@
 import vine from '@vinejs/vine'
 import { TransactionType } from '../enums/transaction.js'
-import { DateTime } from 'luxon'
+import { setTimezone } from '../utils/date.js'
 
 export const createTransactionValidator = vine.compile(
   vine.object({
     title: vine.string().trim().maxLength(100),
     amount: vine.number().positive(),
     date: vine
-      .string()
+      .string() // date doesn't accept datetime
       .trim()
-      .transform((value) => DateTime.fromJSDate(new Date(value))),
+      .transform((value) => setTimezone(new Date(value))),
     description: vine.string().trim().optional(),
     type: vine.enum(TransactionType),
     categoryId: vine.number().positive().exists({
@@ -24,9 +24,9 @@ export const updateTransactionValidator = vine.compile(
     title: vine.string().trim().maxLength(100).optional(),
     amount: vine.number().positive().optional(),
     date: vine
-      .string()
+      .string() // date doesn't accept datetime
       .trim()
-      .transform((value) => DateTime.fromJSDate(new Date(value)))
+      .transform((value) => setTimezone(new Date(value)))
       .optional(),
     description: vine.string().trim().nullable().optional(),
     type: vine.enum(TransactionType).optional(),

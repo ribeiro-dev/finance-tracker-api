@@ -49,7 +49,7 @@ export default class TransactionsController {
         ...payload,
         userId,
       } as ITransactionCreate)
-      return response.ok({ data: created } as ISuccessResponse)
+      return response.created({ data: created } as ISuccessResponse)
 
     } catch (error) {
       console.log(error)

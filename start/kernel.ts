@@ -10,6 +10,7 @@
 
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
+import { Settings } from 'luxon'
 
 /**
  * The error handler is used to convert an exception
@@ -41,3 +42,8 @@ router.use([() => import('@adonisjs/core/bodyparser_middleware')])
 export const middleware = router.named({
   auth: () => import('#middleware/auth_middleware'),
 })
+
+/**
+ * Custom configurations below
+ */
+Settings.defaultZone = process.env.DEFAULT_ZONE ?? 'America/Sao_Paulo'
