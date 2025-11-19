@@ -5,6 +5,7 @@ export class TransactionService {
   async findByUserId(userId: number) {
     const transactions = await Transaction.query()
       .where('userId', userId)
+      .orderBy('date', 'desc')
       .preload('category')
       .preload('creator')
       .exec()
@@ -16,6 +17,7 @@ export class TransactionService {
   async findById(id: number) {
     const transaction = await Transaction.query()
       .where('id', id)
+      .orderBy('date', 'desc')
       .preload('category')
       .preload('creator')
       .first()

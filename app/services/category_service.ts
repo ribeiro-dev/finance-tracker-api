@@ -3,14 +3,14 @@ import { ICategoryCreate, ICategoryRetrieve, ICategoryUpdate } from '../interfac
 
 export default class CategoryService {
   async findAll(): Promise<ICategoryRetrieve[]> {
-    const categories = await Category.query().select().exec()
+    const categories = await Category.query().select().orderBy('name').exec()
     const allCategories = categories.map((item) => item.toResponse())
 
     return allCategories
   }
 
   async findByUserId(userId: number): Promise<ICategoryRetrieve[]> {
-    const categories = await Category.query().where('user_id', userId).exec()
+    const categories = await Category.query().where('user_id', userId).orderBy('name').exec()
     const allCategories = categories.map((item) => item.toResponse())
 
     return allCategories
