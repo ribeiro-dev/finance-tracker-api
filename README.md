@@ -1,4 +1,4 @@
-# 💰 Personal Finance Tracker API
+# 💰 Finance Tracker API
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![AdonisJS](https://img.shields.io/badge/AdonisJS-5A45FF?style=for-the-badge&logo=adonisjs&logoColor=white)
