@@ -37,6 +37,11 @@ export class UserService {
     } as IUserRetrieve
   }
 
+  async findByEmail(email: string): Promise<IUserRetrieve | null> {
+    const user = await User.findBy({ email })
+    return user ? user.toResponse() : null
+  }
+
   async create(payload: IUserCreate): Promise<IUserRetrieve> {
     const user = await User.create(payload)
     const created = {

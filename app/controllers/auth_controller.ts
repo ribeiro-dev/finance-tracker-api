@@ -1,6 +1,9 @@
 import { AuthService } from '#services/auth_service'
-import { loginValidator } from '#validators/auth'
+import { UserService } from '#services/user_service'
+
+import { loginValidator, registerValidator } from '#validators/auth'
 import InvalidCredentialsException from '#exceptions/invalid_credentials_exception'
+import ConflictException from '#exceptions/conflict_exception'
 
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -11,9 +14,11 @@ import JwtUtil from '../utils/jwt.js'
 @inject()
 export default class AuthController {
   private authService: AuthService
+  private userService: UserService
 
-  constructor(authService: AuthService) {
+  constructor(authService: AuthService, userService: UserService) {
     this.authService = authService
+    this.userService = userService
   }
 
   async login({ request, response }: HttpContext) {
@@ -31,5 +36,22 @@ export default class AuthController {
     } as ISuccessResponse
 
     return response.ok(responseBody)
+  }
+
+  async register({ request, response }: HttpContext) {
+    const { email, password, name } = await request.validateUsing(registerValidator)
+    const emailExists = await this.userService.findByEmail(email)
+    if (emailExists) {
+      throw new ConflictException('Email already exists')
+    }
+
+    const created = await this.authService.register(email, password, name)
+    const token = JwtUtil.generateAccessToken(created)
+
+    return response.created({
+      message: 'User created successfully',
+      data: created,
+      token: token,
+    } as ISuccessResponse)
   }
 }
