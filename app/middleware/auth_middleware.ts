@@ -17,10 +17,11 @@ export default class AuthMiddleware {
     const accessToken = authorization.split('Bearer').pop()?.trim()
     if (!accessToken) throw new InvalidTokenException()
 
-    const data = JwtUtil.validate(accessToken)
-    if (!data) throw new InvalidTokenException()
+    const user = JwtUtil.validate(accessToken)
+    if (!user) throw new InvalidTokenException()
 
     // ctx.request.jwt = accessToken
+    ctx.request.user = user
 
     /**
      * Call next method in the pipeline and return its output

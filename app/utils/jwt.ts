@@ -1,6 +1,8 @@
 import env from '#start/env'
 import jwt from 'jsonwebtoken'
 
+import { IJwtPayload, IJwtUser } from '../interfaces/jwt.js'
+
 class JwtUtil {
   private static expirationTime = 3600
 
@@ -19,9 +21,9 @@ class JwtUtil {
     }
   }
 
-  static validate(accessToken: string) {
+  static validate(accessToken: string): IJwtUser | false {
     try {
-      const payload = jwt.verify(accessToken, env.get('APP_KEY'))
+      const { payload } = jwt.verify(accessToken, env.get('APP_KEY')) as IJwtPayload
       return payload
     } catch (error) {
       console.log(error)

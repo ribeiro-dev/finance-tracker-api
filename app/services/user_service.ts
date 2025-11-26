@@ -3,15 +3,19 @@ import { IUserCreate, IUserRetrieve, IUserUpdate } from '../interfaces/user.js'
 
 export class UserService {
   async findAll(): Promise<IUserRetrieve[]> {
-    const users = await User.query().select('*').exec()
+    const users = await User.query()
+      .select('*')
+      .preload('categories')
+      .exec()
 
     const usersRetrieve = users.map((user) => {
-      const { id, name, email, isActive } = user
+      const { id, name, email, isActive, categories } = user
       return {
         id,
         name,
         email,
         isActive,
+        categories,
       } as IUserRetrieve
     })
 
@@ -31,6 +35,11 @@ export class UserService {
       email: user.email,
       isActive: user.isActive,
     } as IUserRetrieve
+  }
+
+  async findByEmail(email: string): Promise<IUserRetrieve | null> {
+    const user = await User.findBy({ email })
+    return user ? user.toResponse() : null
   }
 
   async create(payload: IUserCreate): Promise<IUserRetrieve> {
