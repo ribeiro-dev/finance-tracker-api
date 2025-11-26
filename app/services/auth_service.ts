@@ -8,4 +8,9 @@ export class AuthService {
 
     return validPassword ? user : false
   }
+
+  async register(email: string, plainPassword: string, name: string | undefined) {
+    const user = await User.create({ email, password: plainPassword, name })
+    return user.toResponse()
+  }
 }
