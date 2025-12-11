@@ -2,13 +2,18 @@ import Transaction from '#models/transaction'
 import { ITransactionCreate, ITransactionUpdate } from '../interfaces/transactions.js'
 
 export class TransactionService {
-  async findByUserId(userId: number) {
-    const transactions = await Transaction.query()
+  async findByUserId(userId: number, startDate?: string, endDate?: string) {
+    const query = Transaction.query()
       .where('userId', userId)
       .orderBy('date', 'desc')
       .preload('category')
       .preload('creator')
-      .exec()
+
+    if (startDate && endDate) {
+      query.whereBetween('date', [startDate, endDate])
+    }
+
+    const transactions = await query.exec()
 
     const allTransactions = transactions.map((item) => item.toResponse())
     return allTransactions

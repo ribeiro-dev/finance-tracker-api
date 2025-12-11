@@ -2,6 +2,23 @@ import vine from '@vinejs/vine'
 import { TransactionType } from '../enums/transaction.js'
 import { DateTime } from 'luxon'
 
+const formatDate = (date: Date) => DateTime.fromJSDate(date).toSQLDate()
+
+export const getTransactionsValidator = vine.compile(
+  vine.object({
+    start_date: vine
+      .date({ formats: ['YYYY-MM-DD', 'DD-MM-YYYY'] })
+      .optional()
+      .requiredIfAnyExists(['end_date'])
+      .transform((value) => formatDate(value)),
+    end_date: vine
+      .date({ formats: ['YYYY-MM-DD', 'DD-MM-YYYY'] })
+      .optional()
+      .requiredIfAnyExists(['start_date'])
+      .transform((value) => formatDate(value)),
+  })
+)
+
 export const createTransactionValidator = vine.compile(
   vine.object({
     title: vine.string().trim().maxLength(100),
