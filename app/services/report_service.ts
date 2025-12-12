@@ -11,8 +11,8 @@ export default class ReportService {
     const [income] = await query.clone().where('type', TransactionType.INCOME).sum('amount as total')
     const [expense] = await query.clone().where('type', TransactionType.EXPENSE).sum('amount as total')
 
-    const incomeTotal = income.$extras.total ?? 0
-    const expenseTotal = expense.$extras.total ?? 0
+    const incomeTotal = Number(income.$extras.total) ?? 0
+    const expenseTotal = Number(expense.$extras.total) ?? 0
 
     return {
       period: { start: start_date, end: end_date },

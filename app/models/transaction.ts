@@ -15,7 +15,9 @@ export default class Transaction extends BaseModel {
   @column()
   declare title: string
 
-  @column()
+  @column({
+    consume: (value) => Number(value), // Postgres returns as string
+  })
   declare amount: number
 
   @column.dateTime()
@@ -39,14 +41,12 @@ export default class Transaction extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-
   // Relationships
   @belongsTo(() => User)
   declare creator: BelongsTo<typeof User>
 
   @belongsTo(() => Category)
   declare category: BelongsTo<typeof Category>
-
 
   // Methods
   public toResponse(): ITransactionRetrieve {
