@@ -2,6 +2,7 @@ import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/lucid'
 
 const isProduction = process.env.NODE_ENV === 'production'
+const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_DATABASE } = process.env
 
 const dbConfig = defineConfig({
   connection: isProduction ? 'postgres' : 'sqlite',
@@ -21,8 +22,7 @@ const dbConfig = defineConfig({
     postgres: {
       client: 'pg',
       connection: {
-        connectionString:
-          'postgresql://postgres.xlhqaqzxznvdvfhsnjry:UmaSenhaMuitoFoda@aws-1-sa-east-1.pooler.supabase.com:5432/postgres',
+        connectionString: `postgresql://${DB_USER}.${DB_HOST}:${DB_PASSWORD}@aws-1-sa-east-1.pooler.supabase.com:${DB_PORT}/${DB_DATABASE}`,
         ssl: {
           rejectUnauthorized: false,
         },
