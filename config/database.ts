@@ -1,8 +1,8 @@
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/lucid'
 
-const isProduction = process.env.NODE_ENV === 'production'
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_DATABASE } = process.env
+const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_DATABASE, NODE_ENV } = process.env
+const isProduction = NODE_ENV === 'production'
 
 const dbConfig = defineConfig({
   connection: isProduction ? 'postgres' : 'sqlite',
