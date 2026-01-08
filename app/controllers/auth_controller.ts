@@ -40,13 +40,9 @@ export default class AuthController {
   }
 
   async loginWithGoogle({ request, response }: HttpContext) {
-    console.log('DATA')
     const { code } = await request.validateUsing(googleLoginValidator)
-    console.log('DATA')
 
     const googleUser = await this.authService.verifyGoogleCredentials(code)
-    console.log('googleUser')
-    console.log(googleUser)
     if (!googleUser) throw new InvalidCredentialsException()
 
     const token = JwtUtil.generateAccessToken(googleUser)
