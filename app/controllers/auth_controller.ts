@@ -2,6 +2,7 @@ import { AuthService } from '#services/auth_service'
 import { UserService } from '#services/user_service'
 
 import { loginValidator, registerValidator } from '#validators/auth'
+import { googleLoginValidator } from '#validators/google_login'
 import InvalidCredentialsException from '#exceptions/invalid_credentials_exception'
 import ConflictException from '#exceptions/conflict_exception'
 
@@ -36,6 +37,21 @@ export default class AuthController {
     } as ISuccessResponse
 
     return response.ok(responseBody)
+  }
+
+  async loginWithGoogle({ request, response }: HttpContext) {
+    const { code } = await request.validateUsing(googleLoginValidator)
+
+    const googleUser = await this.authService.verifyGoogleCredentials(code)
+    if (!googleUser) throw new InvalidCredentialsException()
+
+    const token = JwtUtil.generateAccessToken(googleUser)
+    return response.ok({
+      data: {
+        accessToken: token.accessToken,
+        expiresAt: token.expiresAt,
+      },
+    } as ISuccessResponse)
   }
 
   async register({ request, response }: HttpContext) {
