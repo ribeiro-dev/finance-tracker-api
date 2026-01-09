@@ -27,6 +27,7 @@ router
     router
       .group(() => {
         router.post('/login', [AuthController, 'login'])
+        router.post('/google', [AuthController, 'loginWithGoogle'])
         router.post('/register', [AuthController, 'register'])
       })
       .prefix('/auth')

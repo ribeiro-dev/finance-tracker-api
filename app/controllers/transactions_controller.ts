@@ -6,11 +6,13 @@ import BadRequestException from '#exceptions/bad_request_exception'
 import UnauthorizedException from '#exceptions/unauthorized_exception'
 
 import { TransactionService } from '#services/transaction_service'
-import { createTransactionValidator, updateTransactionValidator } from '#validators/transaction'
+import { createTransactionValidator, getTransactionsValidator, updateTransactionValidator } from '#validators/transaction'
 import CategoryService from '#services/category_service'
 
 import { ISuccessResponse } from '../interfaces/responses.js'
 import { ITransactionCreate, ITransactionUpdate } from '../interfaces/transactions.js'
+
+import { DateTime } from 'luxon'
 
 @inject()
 export default class TransactionsController {
@@ -23,10 +25,18 @@ export default class TransactionsController {
   }
 
   async index({ request, response }: HttpContext) {
+    let { start_date, end_date } = await request.validateUsing(getTransactionsValidator)
     const userId = request.user.id
 
+    const datesNotDefined = !start_date || !end_date
+    if (datesNotDefined) {
+      const today = DateTime.now()
+      start_date = today.startOf('month').toFormat('yyyy-MM-dd')
+      end_date = today.endOf('month').toFormat('yyyy-MM-dd')
+    }
+
     try {
-      const transactions = await this.transactionService.findByUserId(userId)
+      const transactions = await this.transactionService.findByUserId(userId, start_date!, end_date!)
       return response.ok({ data: transactions } as ISuccessResponse)
 
     } catch (error) {
